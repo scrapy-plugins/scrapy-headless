@@ -54,7 +54,7 @@ class SeleniumDownloadHandler(HTTP11DownloadHandler):
             return threads.deferToThreadPool(
                 reactor, self._threadpool, self.process_request, request, spider
             )
-        return super().download_request(request, spider)
+        return super(SeleniumDownloadHandler, self).download_request(request, spider)
 
     def process_request(self, request, spider):
         driver = self.get_driver(spider)

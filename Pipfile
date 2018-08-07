@@ -12,6 +12,7 @@ black = "==18.6b4"
 pytest = "*"
 pytest-twisted = "*"
 pytest-mock = "*"
+tox = "*"
 
 [requires]
 python_version = "3.7"
