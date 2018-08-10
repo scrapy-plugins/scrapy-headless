@@ -26,8 +26,8 @@ chrome:
   links:
   - selenium-hub:hub
   environment:
-    - HUB_PORT_4444_TCP_ADDR: hub
-    - GRID_TIMEOUT: 180 # Default timeout is 30s might be low for Selenium
+    - HUB_PORT_4444_TCP_ADDR=hub
+    - GRID_TIMEOUT=180 # Default timeout is 30s might be low for Selenium
   volumes:
   - /dev/shm:/dev/shm
 ```
