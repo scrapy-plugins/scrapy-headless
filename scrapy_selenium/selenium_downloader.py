@@ -12,7 +12,9 @@ from twisted.internet import threads, reactor
 from scrapy_selenium.selenium_request import SeleniumRequest
 
 
-class SeleniumDownloadHandler(HTTP11DownloadHandler):
+class SeleniumDownloadHandler(object):
+    _default_handler_cls = HTTP11DownloadHandler
+
     def __init__(self, settings):
         if "SELENIUM_GRID_URL" not in settings:
             raise NotConfigured("SELENIUM_GRID_URL has to be set")
@@ -29,7 +31,7 @@ class SeleniumDownloadHandler(HTTP11DownloadHandler):
         self._drivers = set()
         self._data = threading.local()
         self._threadpool = ThreadPool(self.selenium_nodes, self.selenium_nodes)
-        super(SeleniumDownloadHandler, self).__init__(settings)
+        self._default_handler = self._default_handler_cls()
 
     def close(self):
         for driver in self._drivers:
@@ -54,12 +56,15 @@ class SeleniumDownloadHandler(HTTP11DownloadHandler):
             return threads.deferToThreadPool(
                 reactor, self._threadpool, self.process_request, request, spider
             )
-        return super(SeleniumDownloadHandler, self).download_request(request, spider)
+        return self._default_handler.download_request(request, spider)
 
     def process_request(self, request, spider):
         driver = self.get_driver(spider)
 
         driver.get(request.url)
+        if request.driver_callback is not None:
+            request.driver_callback(driver)
+
         body = to_bytes(driver.page_source)
         curr_url = driver.current_url
 

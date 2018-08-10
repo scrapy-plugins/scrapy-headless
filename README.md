@@ -2,7 +2,7 @@
 
 This is a plugin to make it easier to use scrapy with a selenium grid
 
-
+https://github.com/SeleniumHQ/docker-selenium/wiki/Getting-Started-with-Docker-Compose
 ## Questions
 
 - py27,34,35,36
@@ -10,13 +10,6 @@ This is a plugin to make it easier to use scrapy with a selenium grid
 - pipenv or no pipenv?
 - ci?
 
-- How to setup selenium timeout?? how much? where? How?
-- Should it be able to support normal selenium(non-grid)
-    - Yes but not on first installment
-- Should it support custom driver creation? How? Spider method?
-    - Yes but ont on first installment
-- How should the user control what the webdriver does? Overriding the Download Handler or a spider method?
-    - Overriding for now
-- SeleniumRequest or a meta flag? Does SeleniumRequest need anything else?
+- How to setup selenium timeout?? how much? where? How? Looks like on the selenium grid config
 - What else should be tested?
     - Test coverage
