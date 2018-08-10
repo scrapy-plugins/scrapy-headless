@@ -5,9 +5,11 @@ from scrapy.core.downloader.handlers.http11 import HTTP11DownloadHandler
 from scrapy.exceptions import NotConfigured
 from scrapy.http import HtmlResponse
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import Remote
 from twisted.python.threadpool import ThreadPool
 from twisted.internet import threads, reactor
+from twisted.web.client import ResponseFailed
 
 from scrapy_selenium.selenium_request import SeleniumRequest
 
@@ -16,6 +18,10 @@ class SeleniumDownloadHandler(object):
     _default_handler_cls = HTTP11DownloadHandler
 
     def __init__(self, settings):
+        # Having this here throws the exception inside a NotSupportedException, which is not good
+        # also it happens too late down the line, it would be better if like with middlewares
+        # you would get right off the bat the NotConfigured exception.
+        # But would be good to add a middleware pretty much just for handling these??
         if "SELENIUM_GRID_URL" not in settings:
             raise NotConfigured("SELENIUM_GRID_URL has to be set")
         if "SELENIUM_NODES" not in settings:
@@ -61,12 +67,21 @@ class SeleniumDownloadHandler(object):
     def process_request(self, request, spider):
         driver = self.get_driver(spider)
 
-        driver.get(request.url)
-        if request.driver_callback is not None:
-            request.driver_callback(driver)
+        try:
+            driver.get(request.url)
+            if request.driver_callback is not None:
+                request.driver_callback(driver)
 
-        body = to_bytes(driver.page_source)
-        curr_url = driver.current_url
+            body = to_bytes(driver.page_source)
+            curr_url = driver.current_url
+        # I have seen a couple of webdriverexceptions so far
+        # 1. Chrome not reachable when running a lot of browser instances (16)
+        # 2. BROWSER_TIMEOUT - It seems this should be fixed by increasing grid timeout
+        except WebDriverException as e:
+            # I would like for RetryMiddleware to retry here, there are the EXCEPTIONS_TO_RETRY:
+            # https://github.com/scrapy/scrapy/blob/master/scrapy/downloadermiddlewares/retry.py#L34
+            # I just picked any exception here, but would like opinions on how to get this going here
+            raise ResponseFailed("WebDriverException")
 
         return HtmlResponse(curr_url, body=body, encoding="utf-8", request=request)
 

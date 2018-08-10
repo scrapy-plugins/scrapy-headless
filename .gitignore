@@ -1,4 +1,7 @@
 .pytest_cache
 .tox
+.coverage
 *.pyc
 *.egg-info
+Pipfile
+Pipfile.lock
