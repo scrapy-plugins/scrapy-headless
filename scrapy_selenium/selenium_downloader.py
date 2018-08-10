@@ -31,7 +31,7 @@ class SeleniumDownloadHandler(object):
         self._drivers = set()
         self._data = threading.local()
         self._threadpool = ThreadPool(self.selenium_nodes, self.selenium_nodes)
-        self._default_handler = self._default_handler_cls()
+        self._default_handler = self._default_handler_cls(settings)
 
     def close(self):
         for driver in self._drivers:
