@@ -1,7 +1,7 @@
 from scrapy import Request
 
 
-class SeleniumRequest(Request):
+class HeadlessRequest(Request):
     def __init__(
         self,
         url,
@@ -12,4 +12,4 @@ class SeleniumRequest(Request):
         **kwargs
     ):
         self.driver_callback = driver_callback
-        super(SeleniumRequest, self).__init__(url, callback, method, headers, **kwargs)
+        super(HeadlessRequest, self).__init__(url, callback, method, headers, **kwargs)

@@ -10,8 +10,8 @@ from twisted.internet import reactor
 from twisted.python.filepath import FilePath
 from pytest_mock import mocker
 
-from scrapy_selenium.selenium_downloader import SeleniumDownloadHandler
-from scrapy_selenium.selenium_request import SeleniumRequest
+from scrapy_headless.downloader import HeadlessDownloadHandler
+from scrapy_headless.request import HeadlessRequest
 
 
 def get_downloader(proxy=False, settings_dict=None):
@@ -23,7 +23,7 @@ def get_downloader(proxy=False, settings_dict=None):
     if proxy:
         settings_dict["SELENIUM_PROXY"] = "172.12.2.1:2122"
     settings = Settings(settings_dict)
-    return SeleniumDownloadHandler(settings)
+    return HeadlessDownloadHandler(settings)
 
 
 def test_settings():
@@ -71,19 +71,19 @@ def test_download_with_proxy_https_noconnect():
     return downloader.download_request(request, Spider("foo")).addCallback(_test)
 
 
-def test_selenium_stuff(mocker):
+def test_selenium(mocker):
     def _test(response):
         assert response.status == 200
         assert response.url == request.url
         assert response.body == b"selenium page"
         downloader.close()
 
-    driver = mocker.patch("scrapy_selenium.selenium_downloader.Remote").return_value
+    driver = mocker.patch("scrapy_headless.downloader.Remote").return_value
 
     driver.page_source = "selenium page"
     driver.current_url = "http://selenium.request.com/"
 
     url = "http://selenium.request.com/"
-    request = SeleniumRequest(url)
+    request = HeadlessRequest(url)
     downloader = get_downloader()
     return downloader.download_request(request, Spider("foo")).addCallback(_test)

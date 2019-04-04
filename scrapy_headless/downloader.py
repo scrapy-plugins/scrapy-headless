@@ -11,17 +11,14 @@ from twisted.python.threadpool import ThreadPool
 from twisted.internet import threads, reactor
 from twisted.web.client import ResponseFailed
 
-from scrapy_selenium.selenium_request import SeleniumRequest
+from scrapy_headless.request import HeadlessRequest
 
 
-class SeleniumDownloadHandler(object):
+class HeadlessDownloadHandler(object):
+    lazy = False
     _default_handler_cls = HTTP11DownloadHandler
 
     def __init__(self, settings):
-        # Having this here throws the exception inside a NotSupportedException, which is not good
-        # also it happens too late down the line, it would be better if like with middlewares
-        # you would get right off the bat the NotConfigured exception.
-        # But would be good to add a middleware pretty much just for handling these??
         if "SELENIUM_GRID_URL" not in settings:
             raise NotConfigured("SELENIUM_GRID_URL has to be set")
         if "SELENIUM_NODES" not in settings:
@@ -56,7 +53,7 @@ class SeleniumDownloadHandler(object):
         self.capabilities["acceptSslCerts"] = True
 
     def download_request(self, request, spider):
-        if isinstance(request, SeleniumRequest):
+        if isinstance(request, HeadlessRequest):
             if not self._threadpool.started:
                 self._threadpool.start()
             return threads.deferToThreadPool(
@@ -74,14 +71,9 @@ class SeleniumDownloadHandler(object):
 
             body = to_bytes(driver.page_source)
             curr_url = driver.current_url
-        # I have seen a couple of webdriverexceptions so far
-        # 1. Chrome not reachable when running a lot of browser instances (16)
-        # 2. BROWSER_TIMEOUT - It seems this should be fixed by increasing grid timeout
+
         except WebDriverException as e:
-            # I would like for RetryMiddleware to retry here, there are the EXCEPTIONS_TO_RETRY:
-            # https://github.com/scrapy/scrapy/blob/master/scrapy/downloadermiddlewares/retry.py#L34
-            # I just picked any exception here, but would like opinions on how to get this going here
-            raise ResponseFailed("WebDriverException")
+            raise ResponseFailed("WebDriverException %s" % e)
 
         return HtmlResponse(curr_url, body=body, encoding="utf-8", request=request)
 

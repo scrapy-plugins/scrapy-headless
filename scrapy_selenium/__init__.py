@@ -1,2 +1,0 @@
-from .selenium_request import SeleniumRequest
-from .selenium_downloader import SeleniumDownloadHandler

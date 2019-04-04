@@ -1,12 +1,12 @@
-# Scrapy Selenium
+# Scrapy Headless
 
-This is a plugin to make it easier to use scrapy with a selenium grid.
+This is a plugin to make it easier to use scrapy with headless browsers, at the moment it only works with selenium grid as a driver.
 
 ## Installation
 
 For now the project is in a private bit bucket repo, so install it from there:
 ```
-pip install -e git+https://bitbucket.org/scrapinghub/scrapy_selenium.git#scrapy_selenium
+pip install scrapy-headless
 ```
 
 ## Usage
@@ -62,31 +62,38 @@ You may also set a proxy for your selenium requests:
 SELENIUM_PROXY = 'http://proxy.url:port'
 ```
 
-Now all you need to do, is on your spider, for the requests you want handled by selenium use `SeleniumRequest` instead of scrapy's Request, for example:
+Now all you need to do, is on your spider, for the requests you want handled by selenium use `HeadlessRequest` instead of scrapy's Request, for example:
 ```py
 from scrapy import Spider
-from scrapy_selenium import SeleniumRequest
+from scrapy_headless import HeadlessRequest
 
 
 class SomeSpider(Spider):
     ...
     def some_parser(self, response):
         ...
-        yield SeleniumRequest(some_url, callback=self.other_parser)
+        yield HeadlessRequest(some_url, callback=self.other_parser)
 ```
 
 If you need to do something with the driver after getting the url you may also set a `driver_callback`:
 ```py
 from scrapy import Spider
-from scrapy_selenium import SeleniumRequest
+from scrapy_headless import HeadlessRequest
 
 
 class SomeSpider(Spider):
     ...
     def some_parser(self, response):
         ...
-        yield SeleniumRequest(some_url, callback=self.other_parser, driver_callback=self.process_webdriver)
+        yield HeadlessRequest(some_url, callback=self.other_parser, driver_callback=self.process_webdriver)
 
     def process_webdriver(self, driver):
         ...
 ```
+
+## Future
+Ideally this download handler should be able to use any of the following:
+
+- [x] Selenium Grid
+- [ ] Selenium (without grid)
+- [ ] Pyppeteer
