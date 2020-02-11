@@ -10,7 +10,6 @@ setup(
     version="0.0.1",
     license="BSD",
     description="Download Handler for using Scrapy with headless browsers",
-    long_description=readme,
     maintainer="Henrique Coura",
     maintainer_email="coura.henrique@gmail.com",
     author="Scrapinghub",
