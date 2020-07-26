@@ -17,6 +17,10 @@ from scrapy_headless.request import HeadlessRequest
 class HeadlessDownloadHandler(object):
     lazy = False
     _default_handler_cls = HTTP11DownloadHandler
+    
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
 
     def __init__(self, settings):
         if "SELENIUM_GRID_URL" not in settings:
