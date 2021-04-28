@@ -87,3 +87,7 @@ class HeadlessDownloadHandler(object):
             self._drivers.add(driver)
             self._data.driver = driver
         return driver
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
