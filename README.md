@@ -52,8 +52,8 @@ SELENIUM_CAPABILITIES = DesiredCapabilities.CHROME  # Example for Chrome
 
 # You need also to change the default download handlers, like so:
 DOWNLOAD_HANDLERS = {
-    "http": "scrapy_selenium.SeleniumDownloadHandler",
-    "https": "scrapy_selenium.SeleniumDownloadHandler",
+    "http": "scrapy_headless.HeadlessDownloadHandler",
+    "https": "scrapy_headless.HeadlessDownloadHandler",
 }
 ```
 

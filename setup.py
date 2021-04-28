@@ -7,7 +7,7 @@ with open("README.md") as f:
 
 setup(
     name="scrapy-headless",
-    version="0.0.1",
+    version="0.0.2",
     license="BSD",
     description="Download Handler for using Scrapy with headless browsers",
     maintainer="Henrique Coura",
